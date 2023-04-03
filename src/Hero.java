@@ -1,6 +1,12 @@
+import javafx.animation.AnimationTimer;
+import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 public class Hero {
     private double x;
@@ -8,7 +14,7 @@ public class Hero {
 
     private ImageView imageView;
 
-    public Heros(double x, double y) {
+    public Hero(double x, double y) {
         this.x = x;
         this.y = y;
         this.imageView = new ImageView(new Image("file:./resources/images/trump.png"));

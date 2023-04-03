@@ -14,7 +14,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 
-public class Stage extends Application {
+public class RegimeMain extends Application {
         @Override
         public void start(Stage primaryStage) throws Exception {
             AnimationTimer timer = new AnimationTimer() {
