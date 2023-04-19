@@ -26,29 +26,44 @@ public class RegimeMain extends Application {
             primaryStage.show();
 
             Pane pane = new Pane();
-            Image background = new Image("file:./resources/images/game_background-transformed.jpeg");
+            Image background = new Image("file:./resources/images/game_background.jpg");
             ImageView backgroundView=new ImageView(background);
             backgroundView.setViewport(new Rectangle2D(0,0,1600,800));
             root.getChildren().add(pane);
             pane.getChildren().add(backgroundView);
 
-            Image FDR = new Image("file:./resources/images/hero_right_walk.png");
-            ImageView heroView = new ImageView(FDR);
-            heroView.setViewport(new Rectangle2D(2124,0,708,929));
-            pane.getChildren().add(heroView);
-            heroView.setScaleX(0.25);
-            heroView.setScaleY(0.25);
-            heroView.setX(800);
-            heroView.setY((background.getHeight())/10);
+            Hero FDR = new Hero(new Image("file:./resources/images/hero_sprite_sheet.png"), 708, 929, 0, 0, new Point2D(3, 1));
+            pane.getChildren().add(FDR.getHeroView());
+            FDR.getHeroView().setScaleX(0.25);
+            FDR.getHeroView().setScaleY(0.25);
+            FDR.setX(800 - FDR.getSpriteColumnSize() / 2);
+            FDR.setY((int) ((background.getHeight())/10));
 
             AnimationTimer timer = new AnimationTimer() {
                 @Override
                 public void handle(long time) {
-
+                    FDR.updateImageViewInScene(time);
                 }
             };
 
             timer.start();
+
+            backgroundView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    System.out.println("MARCHE!!!");
+                    // change this so that it makes the character walk
+                    if (mouseEvent.getX() < FDR.getHeroView().getX() + (FDR.getSpriteColumnSize() / 2)) {
+                        FDR.getHeroView().setViewport(new Rectangle2D(3 * FDR.getSpriteColumnSize(), 0, FDR.getSpriteColumnSize(), FDR.getSpriteRowSize()));
+                    } else {
+                        FDR.getHeroView().setViewport(new Rectangle2D(3 * FDR.getSpriteColumnSize(), FDR.getSpriteRowSize(), FDR.getSpriteColumnSize(), FDR.getSpriteRowSize()));
+                    }
+                    //FDR.getHeroView().setX(mouseEvent.getX() - (FDR.getSpriteColumnSize() / 2));
+                    FDR.walkLeft(new Point2D(mouseEvent.getX() - (FDR.getSpriteColumnSize() / 2), 0));
+                    System.out.println(mouseEvent.getX());
+                    System.out.println(mouseEvent.getY());
+                }
+            });
         }
 
         public static void main(String[] args) {

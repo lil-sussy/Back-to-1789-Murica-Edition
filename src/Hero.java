@@ -7,31 +7,75 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.geometry.Point2D;
 
 public class Hero {
-    private double x;
-    private double y;
+    private ImageView heroView;
+    private int spriteColumnSize;
+    private int spriteRowSize;
+    private int x;
+    private int y;
 
-    private ImageView imageView;
+    private Point2D startingSprite;
 
-    public Hero(double x, double y) {
+    private boolean isWalkingLeft = false;
+    private boolean isWalkingRight = false;
+
+
+    public Hero(Image startingImage, int spriteColumnSize, int spriteRowSize, int x, int y, Point2D startingSprite) {
+        this.heroView = new ImageView(startingImage);
+        this.spriteColumnSize = spriteColumnSize;
+        this.spriteRowSize = spriteRowSize;
+        this.heroView.setViewport(new Rectangle2D(startingSprite.getX() * spriteColumnSize, startingSprite.getY() * spriteRowSize, spriteColumnSize, spriteRowSize));
         this.x = x;
         this.y = y;
-        this.imageView = new ImageView(new Image("file:./resources/images/trump.png"));
-        imageView.setViewport(new Rectangle2D(20,0,65,100));
+        this.startingSprite = startingSprite;
     }
 
-    public ImageView getImageView() {
-        return imageView;
+    public void updateImageViewInScene(long time) {
+        if (isWalkingLeft) {
+            x -= 1;
+        } else if (isWalkingRight) {
+            x += 1;
+        }
+        this.heroView.setX(x);
     }
 
-    public void updateImageViewInScene(Camera man, long time){
-        imageView.setX(x-man.getX());
-        imageView.setY(y-man.getY());
+    public void walkLeft(Point2D dest) {
+        isWalkingLeft = true;
+    }
 
-        int index= (int) (((time/1000000)/150)%6);
-        imageView.setViewport(new Rectangle2D(15+(85*index),0,70,100));
+    public void walkRight(Point2D dest) {
+        isWalkingRight = true;
+    }
 
+    public ImageView getHeroView() {
+        return heroView;
+    }
 
+    public int getSpriteColumnSize() {
+        return spriteColumnSize;
+    }
+
+    public int getSpriteRowSize() {
+        return spriteRowSize;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+        this.heroView.setX(x);
+    }
+
+    public void setY(int y) {
+        this.y = y;
+        this.heroView.setY(y);
     }
 }
