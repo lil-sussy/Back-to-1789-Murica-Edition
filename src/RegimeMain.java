@@ -8,6 +8,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Rotate;
@@ -32,37 +34,56 @@ public class RegimeMain extends Application {
             root.getChildren().add(pane);
             pane.getChildren().add(backgroundView);
 
-            Hero FDR = new Hero(new Image("file:./resources/images/hero_sprite_sheet.png"), 708, 929, 0, 0, new Point2D(3, 1));
+            Image castle = new Image("file:./resources/images/castle.png");
+            ImageView castleView = new ImageView(castle);
+            pane.getChildren().add(castleView);
+            castleView.setX(800 - castle.getWidth() / 2);
+            castleView.setY(160);
+            castleView.setScaleX(0.85);
+            castleView.setScaleY(0.85);
+
+            Hero FDR = new Hero(new Image("file:./resources/images/hero_sprite_sheet.png"), 708, 929, 0, 0, new Point2D(3, 1), 14);
             pane.getChildren().add(FDR.getHeroView());
             FDR.getHeroView().setScaleX(0.25);
             FDR.getHeroView().setScaleY(0.25);
             FDR.setX(800 - FDR.getSpriteColumnSize() / 2);
             FDR.setY((int) ((background.getHeight())/10));
 
+            EagleProjectile eagle = new EagleProjectile(new Image("file:./resources/images/eagle.png"), 10);
+            pane.getChildren().add(eagle.getEagleView());
             AnimationTimer timer = new AnimationTimer() {
                 @Override
                 public void handle(long time) {
                     FDR.updateImageViewInScene(time);
+                    eagle.updateImageViewInScene(time);
                 }
             };
 
             timer.start();
 
-            backgroundView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    System.out.println("MARCHE!!!");
-                    // change this so that it makes the character walk
-                    if (mouseEvent.getX() < FDR.getHeroView().getX() + (FDR.getSpriteColumnSize() / 2)) {
-                        FDR.getHeroView().setViewport(new Rectangle2D(3 * FDR.getSpriteColumnSize(), 0, FDR.getSpriteColumnSize(), FDR.getSpriteRowSize()));
+            backgroundView.requestFocus();
+            backgroundView.setOnKeyPressed(ev -> {
+                if (ev.getCode() == KeyCode.SPACE) {
+                    System.out.println("EAGLE!");
+                    if (FDR.getCurrentFrame().getY() == 0) {
+                        eagle.enable(((int) FDR.getCurrentFrame().getY()) == 0, (int) (FDR.getHeroView().getX()),
+                                ((int) ((background.getHeight())/6)));
                     } else {
-                        FDR.getHeroView().setViewport(new Rectangle2D(3 * FDR.getSpriteColumnSize(), FDR.getSpriteRowSize(), FDR.getSpriteColumnSize(), FDR.getSpriteRowSize()));
+                        eagle.enable(((int) FDR.getCurrentFrame().getY()) == 0, (int) (FDR.getHeroView().getX()),
+                                ((int) ((background.getHeight())/6)));
                     }
-                    //FDR.getHeroView().setX(mouseEvent.getX() - (FDR.getSpriteColumnSize() / 2));
-                    FDR.walkLeft(new Point2D(mouseEvent.getX() - (FDR.getSpriteColumnSize() / 2), 0));
-                    System.out.println(mouseEvent.getX());
-                    System.out.println(mouseEvent.getY());
                 }
+            });
+
+            backgroundView.setOnMouseClicked(mouseEvent -> {
+                System.out.println("MARCHE!!!");
+                if (mouseEvent.getX() < FDR.getHeroView().getX() + (FDR.getSpriteColumnSize() / 2)) {
+                    FDR.walkLeft(new Point2D(mouseEvent.getX() - (FDR.getSpriteColumnSize() / 2), 0));
+                } else {
+                    FDR.walkRight(new Point2D(mouseEvent.getX() - (FDR.getSpriteColumnSize() / 2), 0));
+                }
+                System.out.println(mouseEvent.getX());
+                System.out.println(mouseEvent.getY());
             });
         }
 
