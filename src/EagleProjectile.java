@@ -29,6 +29,7 @@ public class EagleProjectile {
             this.eagleView.setX(0);
             this.eagleView.setY(0);
         } else {
+            this.eagleView.setY(y);
             this.eagleView.setVisible(true);
             if (flyLeft) {
                 this.eagleView.setScaleX(1);
