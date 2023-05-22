@@ -24,7 +24,7 @@ public class Hero {
     private boolean isWalkingRight = false;
     private Point2D walkDest = new Point2D(0, 0);
     private int frames;
-
+    private boolean animate = false;
 
     public Hero(Image startingImage, int spriteColumnSize, int spriteRowSize, int x, int y, Point2D startingSprite, int frames) {
         this.heroView = new ImageView(startingImage);
@@ -56,7 +56,7 @@ public class Hero {
             if (currentFrame.getX() >= frames) {
                 currentFrame = new Point2D(0, 0);
             } else {
-                currentFrame = new Point2D(currentFrame.getX() + 1, 0);
+                currentFrame = new Point2D(currentFrame.getX() + 1, 1);
             }
             this.getHeroView().setViewport(new Rectangle2D(currentFrame.getX() * this.getSpriteColumnSize(), this.getSpriteRowSize(), this.getSpriteColumnSize(), this.getSpriteRowSize()));
             if (x > walkDest.getX()) {
@@ -109,5 +109,9 @@ public class Hero {
     public void setY(int y) {
         this.y = y;
         this.heroView.setY(y);
+    }
+
+    public Point2D getCurrentFrame() {
+        return currentFrame;
     }
 }

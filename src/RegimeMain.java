@@ -14,12 +14,18 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+
+import java.io.File;
 
 
 public class RegimeMain extends Application {
         @Override
         public void start(Stage primaryStage) throws Exception {
             primaryStage.setTitle("Back to 1789");
+
             Group root = new Group();
             Group gameRoot = new Group();
             Scene scene = new Scene(root, 1600, 800,true);
@@ -33,6 +39,12 @@ public class RegimeMain extends Application {
             backgroundView.setViewport(new Rectangle2D(0,0,1600,800));
             root.getChildren().add(pane);
             pane.getChildren().add(backgroundView);
+
+            Media backgroundMusic = new Media(new File("resources/audio/GAME_INTRO.mp3").toURI().toString());
+            MediaPlayer mediaPlayer = new MediaPlayer(backgroundMusic);
+            mediaPlayer.setAutoPlay(true);
+            MediaView mediaView = new MediaView(mediaPlayer);
+            root.getChildren().add(mediaView);
 
             Image castle = new Image("file:./resources/images/castle.png");
             ImageView castleView = new ImageView(castle);
