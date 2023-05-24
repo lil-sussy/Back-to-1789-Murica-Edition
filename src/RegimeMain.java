@@ -19,25 +19,36 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import java.io.File;
 
-
 public class RegimeMain extends Application {
+
+        private final int maxEnemies = 500;
+        private int enemiesDefeated = 0;
+        private long startTime = -1;
+        private long currentTime = 0;
+        private long prevTime = -1;
+        private int castleHealth = 10;
+        private int waveSize = 3;
+        private int enemySpeed = 3;
         private Random rand = new Random();
         private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-        private Enemy addEnemy(boolean leftSide) {
+        private Enemy addEnemy(boolean leftSide, int enemySpeed) {
+            int randomizeSpawn = rand.nextInt(150);
             Enemy spawnedEnemy = new Enemy(new Image("file:./resources/images/peasant_sprite_sheet.png"),
                     103, 114, 800, 800, new Point2D(3, 1), 7, leftSide);
             spawnedEnemy.setY(500);
             if (leftSide) {
-                spawnedEnemy.setX(0);
+                spawnedEnemy.setX(0 - randomizeSpawn);
             } else {
-                spawnedEnemy.setX(1500);
+                spawnedEnemy.setX(1500 + randomizeSpawn);
             }
             spawnedEnemy.getHeroView().setScaleX(1.25);
             spawnedEnemy.getHeroView().setScaleY(1.25);
+            spawnedEnemy.setSpeed(enemySpeed);
             return spawnedEnemy;
         }
         @Override
@@ -95,25 +106,63 @@ public class RegimeMain extends Application {
             EagleProjectile eagle = new EagleProjectile(new Image("file:./resources/images/eagle.png"), 10);
             pane.getChildren().add(eagle.getEagleView());
 
-            enemies.add(addEnemy(true));
-            enemies.add(addEnemy(false));
-            pane.getChildren().add(enemies.get(0).getHeroView());
-            pane.getChildren().add(enemies.get(1).getHeroView());
-            enemies.get(0).walkRight(new Point2D(800, 0));
-            enemies.get(1).walkLeft(new Point2D(800, 0));
-
+//            enemies.add(addEnemy(true));
+//            enemies.add(addEnemy(false));
+//            pane.getChildren().add(enemies.get(0).getHeroView());
+//            pane.getChildren().add(enemies.get(1).getHeroView());
+//            enemies.get(0).walkRight(new Point2D(800, 0));
+//            enemies.get(1).walkLeft(new Point2D(800, 0));
             AnimationTimer timer = new AnimationTimer() {
                 @Override
                 public void handle(long time) {
+                    if (startTime == -1) {
+                        startTime = time / (1000000000 * 10);
+                    }
+                    currentTime = time / (1000000000 * 10) - startTime;
+                    System.out.println(currentTime);
+                    enemySpeed = (int) currentTime / 10;
+                    if (prevTime != currentTime) {
+                        for (int i = 0; i < waveSize; i++) {
+                            boolean spawnSide = (rand.nextInt(1000) < 500);
+                            Enemy enemy  = addEnemy(spawnSide, enemySpeed);
+                            if (spawnSide) {
+                                enemy.walkRight(new Point2D(800, 0));
+                            } else {
+                                enemy.walkLeft(new Point2D(800, 0));
+                            }
+                            pane.getChildren().add(enemy.getHeroView());
+                            enemies.add(enemy);
+                        }
+                    }
+                    if (enemiesDefeated >= maxEnemies) {
+                        primaryStage.setScene(winScene);
+                        primaryStage.show();
+                    } else if (castleHealth < 0) {
+                        primaryStage.setScene(losingScene);
+                        primaryStage.show();
+                    }
                     if (eagle.getX() > 1600 || eagle.getX() < -790) {
                         eagle.disable();
                     }
                     TR.updateImageViewInScene(time);
                     eagle.updateImageViewInScene(time);
-                    for (Enemy enemy : enemies) {
-                        enemy.updateImageViewInScene(time);
+                    Iterator<Enemy> itr = enemies.iterator();
+                    while (itr.hasNext()) {
+                        Enemy enemy = itr.next();
+                        if (((enemy.getX() < (TR.getHeroView().getX() + TR.getSpriteColumnSize() / 2)) && enemy.getX() > (TR.getHeroView().getX() + TR.getSpriteColumnSize() / 2) - 50)
+                                || (enemy.getX() < eagle.getEagleView().getX() + 270 && enemy.getX() > eagle.getEagleView().getX() + 250)) {
+                            enemiesDefeated += 1;
+                            enemy.getHeroView().setVisible(false);
+                            pane.getChildren().remove(enemy);
+                            itr.remove();
+                        } else {
+                            if (enemy.getX() < 900 && enemy.getX() > 700) {
+                                castleHealth -= 1;
+                            }
+                            enemy.updateImageViewInScene(time);
+                        }
                     }
-                    System.out.println(time / (1000000000 * 10));
+                    prevTime = currentTime;
                 }
             };
 

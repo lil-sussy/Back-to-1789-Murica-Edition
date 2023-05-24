@@ -26,7 +26,7 @@ public class Hero {
     protected int frames;
     protected final int animationRate  = 4;
     protected int animationStage = 0;
-    protected final int speed = 3;
+    protected int speed = 6;
 
     public Hero(Image startingImage, int spriteColumnSize, int spriteRowSize, int x, int y, Point2D startingSprite, int frames) {
         this.heroView = new ImageView(startingImage);
@@ -119,5 +119,13 @@ public class Hero {
 
     public Point2D getCurrentFrame() {
         return currentFrame;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 }
