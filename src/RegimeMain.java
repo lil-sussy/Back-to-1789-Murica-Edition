@@ -17,6 +17,8 @@ import javafx.stage.Stage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.control.Label;
+import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -67,6 +69,20 @@ public class RegimeMain extends Application {
             root.getChildren().add(pane);
             pane.getChildren().add(backgroundView);
 
+            Label enemyLabel = new Label();
+            enemyLabel.setFont(new Font(30));
+            enemyLabel.setText("Les anarchistes vaincus: " + enemiesDefeated);
+            enemyLabel.setLayoutX(25);
+            enemyLabel.setLayoutY(25);
+            pane.getChildren().add(enemyLabel);
+
+            Label castleLabel = new Label();
+            castleLabel.setFont(new Font(30));
+            castleLabel.setText("PdV du Château: " + castleHealth);
+            castleLabel.setLayoutX(1280);
+            castleLabel.setLayoutY(25);
+            pane.getChildren().add(castleLabel);
+
             Group loseRoot = new Group();
             Scene losingScene = new Scene(loseRoot, 1280,720,true);
             Image loseBackground = new Image("file:./resources/images/lose_screen.jpg");
@@ -115,6 +131,9 @@ public class RegimeMain extends Application {
             AnimationTimer timer = new AnimationTimer() {
                 @Override
                 public void handle(long time) {
+                    enemyLabel.setText("Les anarchistes vaincus: " + enemiesDefeated);
+                    castleLabel.setText("PdV du Château: " + castleHealth);
+
                     if (startTime == -1) {
                         startTime = time / (1000000000 * 10);
                     }
@@ -158,6 +177,9 @@ public class RegimeMain extends Application {
                         } else {
                             if (enemy.getX() < 900 && enemy.getX() > 700) {
                                 castleHealth -= 1;
+                                enemy.getHeroView().setVisible(false);
+                                pane.getChildren().remove(enemy);
+                                itr.remove();
                             }
                             enemy.updateImageViewInScene(time);
                         }
